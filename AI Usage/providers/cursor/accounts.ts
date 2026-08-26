@@ -171,15 +171,25 @@ export function updateProfileIdentity(
   const registry = getAccountRegistry();
   writeRegistry({
     ...registry,
-    accounts: registry.accounts.map((account) => {
+    accounts: registry.accounts.map((account, index) => {
       if (account.id !== profileId) return account;
       const email = identity.email || account.email || null;
+      let name = account.name;
+      if (email) {
+        name = email;
+      } else if (
+        !name ||
+        /^账号\s*\d+$/i.test(name) ||
+        name === account.id ||
+        /^acct_/i.test(name)
+      ) {
+        name = `账号 ${index + 1}`;
+      }
       return {
         ...account,
         accountId: identity.accountId || account.accountId,
         email,
-        // 有邮箱时一律用邮箱作为展示名，避免停留在「账号 1」。
-        name: email || (isPlaceholderName(account.name) ? account.id : account.name),
+        name,
         updatedAt: new Date().toISOString(),
       };
     }),

@@ -6,6 +6,14 @@ export type ChangelogEntry = {
 
 export const CHANGELOG = [
   {
+    version: "1.4.1",
+    date: "2026-08-26",
+    changes: [
+      "Cursor 账号邮箱改为优先通过官方网页接口 cursor.com/api/auth/me 获取，失败再回退 Stripe profile。",
+      "避免无邮箱时把内部 acct_ id 写成展示名。",
+    ],
+  },
+  {
     version: "1.4.0",
     date: "2026-08-26",
     changes: [

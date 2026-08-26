@@ -56,7 +56,8 @@ https://raw.githubusercontent.com/StarYunLee/Scripting/main/AI-Usage.scripting
 ### Codex
 
 - 回调：`http://localhost:1455/auth/callback?...`
-- 复制 Safari 地址栏中的完整回调地址
+- 应用会尽量在本机自动捕获回调并完成登录（需 Scripting 提供 HttpServer 能力）
+- 若未自动完成：复制 Safari 地址栏中的完整回调地址并粘贴提交
 
 ### Grok
 

@@ -6,6 +6,15 @@ export type ChangelogEntry = {
 
 export const CHANGELOG = [
   {
+    version: "1.5.1",
+    date: "2026-08-26",
+    changes: [
+      "删除总用量 Extra Large 布局代码（Scripting 不支持该尺寸）。",
+      "README 更新至 v1.5.x，补充 dashboard 总用量小组件与术语表说明。",
+      "labels.ts 扩展至 Codex / Grok / Kimi / Cursor / Antigravity 各 provider 额度标签。",
+    ],
+  },
+  {
     version: "1.5.0",
     date: "2026-08-26",
     changes: [

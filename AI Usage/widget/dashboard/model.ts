@@ -1,6 +1,6 @@
 import { Widget } from "scripting";
 import { formatPercent } from "../../providers/codex/format";
-import type { UsageCard } from "../../models";
+import type { ProviderId, UsageCard } from "../../models";
 import type { WidgetPrivacyPrefs } from "../../services/dashboard-prefs";
 
 export {
@@ -9,7 +9,7 @@ export {
 } from "../../copy/labels";
 export { widgetQuotaTitle } from "../../copy/labels";
 
-export type WidgetLayoutSize = "small" | "medium" | "large" | "exlarge";
+export type WidgetLayoutSize = "small" | "medium" | "large";
 
 export type DashboardRow = {
   key: string;
@@ -23,24 +23,8 @@ export type DashboardRow = {
   remainingPercent: number | null;
 };
 
-export type AccountGroup = {
-  accountKey: string;
-  accountId: string;
-  provider: ProviderId;
-  accountTitle: string;
-  planLabel: string | null;
-  rows: DashboardRow[];
-};
-
 export function widgetLayoutSize(family: string): WidgetLayoutSize {
   const value = family.toLowerCase();
-  if (
-    value.includes("extra") ||
-    value.includes("exlarge") ||
-    value.includes("xlarge")
-  ) {
-    return "exlarge";
-  }
   if (value.includes("large")) return "large";
   if (value.includes("medium")) return "medium";
   return "small";
@@ -60,7 +44,6 @@ export function widgetDisplaySize(family: string): { width: number; height: numb
     /* ignore */
   }
   const size = widgetLayoutSize(family);
-  if (size === "exlarge") return { width: 510, height: 510 };
   if (size === "large") return { width: 364, height: 382 };
   if (size === "medium") return { width: 338, height: 158 };
   return { width: 158, height: 158 };
@@ -84,28 +67,6 @@ export function flattenCards(cards: UsageCard[]): DashboardRow[] {
     }
   }
   return rows;
-}
-
-export function groupRowsByAccount(rows: DashboardRow[]): AccountGroup[] {
-  const groups: AccountGroup[] = [];
-  const index = new Map<string, AccountGroup>();
-  for (const row of rows) {
-    let group = index.get(row.accountKey);
-    if (!group) {
-      group = {
-        accountKey: row.accountKey,
-        accountId: row.accountId,
-        provider: row.provider,
-        accountTitle: row.accountTitle,
-        planLabel: row.planLabel,
-        rows: [],
-      };
-      index.set(row.accountKey, group);
-      groups.push(group);
-    }
-    group.rows.push(row);
-  }
-  return groups;
 }
 
 export function shortAccountTitle(title: string): string {
@@ -219,8 +180,4 @@ export function largeVisibleLimit(
   const fit = Math.floor(available / rowBlock);
   const cap = dense ? 8 : 9;
   return Math.min(cap, Math.max(6, fit));
-}
-
-export function multipleAccounts(rows: DashboardRow[]): boolean {
-  return new Set(rows.map((row) => row.accountKey)).size > 1;
 }

@@ -8,7 +8,7 @@
   </tr>
 </table>
 
-面向 [Scripting App](https://scriptingapp.github.io/) 的非官方多平台用量查看应用。在一个项目里管理 Codex、Grok、Claude、Antigravity、Cursor、Kimi Code、GitHub Copilot 与 Z.ai（智谱）的多账号用量、主屏幕小组件和自动化刷新。
+面向 [Scripting App](https://scriptingapp.github.io/) 的非官方多平台用量查看应用。在一个项目里管理 Codex、Grok、Claude、Antigravity、Cursor、Kimi Code、GitHub Copilot、Z.ai（智谱）与 MiniMax 的多账号用量、主屏幕小组件和自动化刷新。
 
 当前版本：`1.5.1`
 

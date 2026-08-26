@@ -10,7 +10,7 @@ export const CHANGELOG = [
     date: "2026-08-26",
     changes: [
       "Cursor 账号邮箱改为优先通过官方网页接口 cursor.com/api/auth/me 获取，失败再回退 Stripe profile。",
-      "避免无邮箱时把内部 acct_ id 写成展示名。",
+      "修复 Cursor 账号展示成 acct_ 内部 ID 的问题：无邮箱时保留可读占位名，并继续尝试回填邮箱。",
     ],
   },
   {

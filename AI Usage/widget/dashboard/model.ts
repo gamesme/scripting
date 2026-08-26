@@ -1,13 +1,22 @@
 import { Widget } from "scripting";
 import { formatPercent } from "../../providers/codex/format";
+import {
+  widgetProviderShortName,
+  widgetQuotaTitle,
+  widgetWindowLabel,
+} from "../../copy/labels";
 import type { ProviderId, UsageCard } from "../../models";
 import type { WidgetPrivacyPrefs } from "../../services/dashboard-prefs";
 
-export {
-  widgetProviderShortName as providerShortName,
-  widgetWindowLabel as shortWindowLabel,
-} from "../../copy/labels";
-export { widgetQuotaTitle } from "../../copy/labels";
+export function providerShortName(provider: ProviderId): string {
+  return widgetProviderShortName(provider);
+}
+
+export function shortWindowLabel(label: string): string {
+  return widgetWindowLabel(label);
+}
+
+export { widgetQuotaTitle };
 
 export type WidgetLayoutSize = "small" | "medium" | "large";
 
@@ -96,7 +105,7 @@ export function remainingLabel(remainingPercent: number | null): string {
 }
 
 export function privacySubtitle(
-  row: Pick<DashboardRow, "accountTitle" | "accountId">,
+  row: { accountTitle: string; accountId: string },
   privacy: WidgetPrivacyPrefs,
 ): string | null {
   const parts: string[] = [];

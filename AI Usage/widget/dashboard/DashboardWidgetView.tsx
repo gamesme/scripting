@@ -38,8 +38,8 @@ import {
   smallVisibleLimit,
   widgetDisplaySize,
   widgetLayoutSize,
-  type DashboardRow,
 } from "./model";
+import type { DashboardRow } from "./model";
 
 type Props = {
   cards: UsageCard[];

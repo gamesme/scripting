@@ -6,6 +6,13 @@ export type ChangelogEntry = {
 
 export const CHANGELOG = [
   {
+    version: "1.5.2",
+    date: "2026-08-26",
+    changes: [
+      "修复总用量小组件 SyntaxError: unexpected )：移除 Scripting 不兼容的 TS 语法（类型谓词、re-export、as const 等）。",
+    ],
+  },
+  {
     version: "1.5.1",
     date: "2026-08-26",
     changes: [

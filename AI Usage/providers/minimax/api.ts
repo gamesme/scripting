@@ -130,8 +130,8 @@ async function requestQuota(
   return { ok: false, status: lastStatus };
 }
 
-/** 用 Subscription Key 查询真实套餐档位（remains_percent 接受 API Key）。 */
-async function fetchSubscriptionPlanType(
+/** 独立套餐接口拉取真实档位（对齐 zai/kimi 的 fetchPlanLabel）。 */
+async function fetchPlanLabel(
   token: string,
   region: MinimaxRegion,
 ): Promise<string | null> {
@@ -236,22 +236,21 @@ export async function fetchUsage(options?: {
       saveProfileCredentials(profile.id, { accessToken: token, region });
     }
 
-    // 优先订阅接口真实档位；quota 字段与额度推断仅作兜底。缓存回退只吃 raw。
-    const subscriptionPlan = await fetchSubscriptionPlanType(token, region);
-    const rawPlanType =
-      subscriptionPlan ||
+    // planType 只存原始档位；回退链绝不用带站点后缀的 planLabel（对齐 zai/kimi）。
+    const planType =
+      (await fetchPlanLabel(token, region)) ||
       parsed.planType ||
       inferPlanFromLimit(parsed.intervalTotal, region) ||
       sanitizeCachedPlanType(cache?.planType) ||
-      sanitizeCachedPlanType(cache?.planLabel) ||
       null;
 
     const snapshot: UsageSnapshot = {
       windows: parsed.windows,
       fiveHour: parsed.fiveHour,
       weekly: parsed.weekly,
-      planType: rawPlanType,
-      planLabel: buildPlanDisplayLabel(rawPlanType, region),
+      planType,
+      // MiniMax 需要区分站点，展示串在此层拼接一次；下次回退只用 planType。
+      planLabel: buildPlanDisplayLabel(planType, region),
       region,
       fetchedAt: new Date().toISOString(),
       source: "live",

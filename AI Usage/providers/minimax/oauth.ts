@@ -1,4 +1,5 @@
 import { fetch } from "scripting";
+import { parseJwtPayload } from "../../services/jwt-payload";
 import {
   getProfileAccessToken,
   getProfileRegion,
@@ -182,10 +183,34 @@ function parseIdentityPayload(payload: unknown): MinimaxIdentity | null {
   return { email: emailOk, accountId, name };
 }
 
-export async function fetchMinimaxIdentity(
+function identityFromJwt(token: string): MinimaxIdentity | null {
+  const jwt = parseJwtPayload(token);
+  if (!jwt) return null;
+  const emailRaw = firstString(jwt.email, jwt.mail, jwt.user_email);
+  const email =
+    emailRaw && emailRaw.includes("@") ? emailRaw : null;
+  const accountId = firstString(
+    jwt.sub,
+    jwt.user_id,
+    jwt.uid,
+    jwt.id,
+    jwt.account_id,
+  );
+  const name = firstString(
+    jwt.nickname,
+    jwt.name,
+    jwt.preferred_username,
+    jwt.username,
+  );
+  if (!email && !accountId && !name) return null;
+  return { email, accountId, name };
+}
+
+/** 登录完成后拉取用户信息（对齐 antigravity fetchUserInfo / claude JWT）。 */
+export async function fetchUserInfo(
   token: string,
   region: MinimaxRegion,
-): Promise<MinimaxIdentity | null> {
+): Promise<MinimaxIdentity> {
   for (const url of userInfoUrls(region)) {
     try {
       const response = await fetch(url, {
@@ -205,7 +230,9 @@ export async function fetchMinimaxIdentity(
       /* try next endpoint */
     }
   }
-  return null;
+  return (
+    identityFromJwt(token) || { email: null, accountId: null, name: null }
+  );
 }
 
 async function probeRegionPayload(
@@ -253,13 +280,13 @@ export async function completeMinimaxLogin(input?: string): Promise<void> {
 
     const masked = `${apiKey.slice(0, 4)}…${apiKey.slice(-4)}`;
     const fallbackName = `MiniMax ${regionDisplayName(region)} ${masked}`;
-    const identity = await fetchMinimaxIdentity(apiKey, region);
+    const identity = await fetchUserInfo(apiKey, region);
     const saved = saveProfileCredentials(pending.profileId, {
       accessToken: apiKey,
       region,
-      name: identity?.name || identity?.email || fallbackName,
-      email: identity?.email || null,
-      accountId: identity?.accountId || masked,
+      name: identity.name || identity.email || fallbackName,
+      email: identity.email,
+      accountId: identity.accountId || masked,
     });
     if (!saved)
       throw new Error("Subscription Key 已验证，但本机 Keychain 保存失败");
